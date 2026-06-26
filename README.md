@@ -176,3 +176,209 @@ O JS parece menor porque **esconde** o `package`, o `import` e o `main`. Eles ex
 - O `{` da função **tem que ficar na mesma linha** que o `func` — colocar em baixo dá erro (regra do Go).
 - **Variável declarada e não usada = erro.** Mesma coisa pra `import`.
 - O Go formata o código por você: rode `go fmt ./...` e ele arruma a indentação.
+
+---
+
+# Go do Zero — Doc 02: Variáveis e Tipos
+
+> Caderno de estudos de Go para quem vem de TypeScript/JavaScript.
+> Código e comentários em **inglês**; explicações em **PT-BR**.
+
+---
+
+## Objetivo desta doc
+
+Entender como o Go lida com variáveis e tipos — e por que ele é **mais rígido e explícito** que o JS/TS. Ao fim, você sabe declarar, mudar, converter tipos e entende os "valores zero".
+
+---
+
+## 1. A diferença que mais choca vindo de JS
+
+No JS você tem `let`, `const`, `var` e o tipo é descoberto na hora, podendo até mudar (`x = 5` depois `x = "texto"`).
+
+No Go, **toda variável tem um tipo fixo** que **nunca muda**. Se nasceu `int`, morre `int`. O compilador garante isso.
+
+---
+
+## 2. As duas formas de declarar
+
+### Forma 1 — explícita (`var` + tipo)
+
+```go
+var name string = "Levi"
+var age int = 20
+```
+
+Use quando quiser deixar o tipo **bem claro**, ou quando declarar uma variável **sem valor inicial** (ver "zero values" abaixo).
+
+### Forma 2 — curta (`:=`) — a mais usada
+
+```go
+name := "Levi"   // Go infere: string
+age := 20        // Go infere: int
+```
+
+O `:=` **declara e atribui** de uma vez, e o Go **infere** o tipo pelo valor.
+
+> O `:=` só funciona **dentro de funções**. Fora de função (nível de pacote), use `var`.
+
+### Comparação JS ↔ Go
+
+```javascript
+// JS
+let name = "Levi"
+const age = 20
+```
+
+```go
+// Go
+name := "Levi"
+age := 20
+```
+
+---
+
+## 3. Pegadinha — `:=` cria, `=` muda
+
+`:=` declara uma variável nova. `=` muda o valor de uma que já existe.
+
+```go
+name := "Levi"   // cria
+name = "João"    // muda (sem os dois pontos)
+name := "Pedro"  // ERRO: já existe, não pode recriar
+```
+
+Mensagem de erro típica: `no new variables on left side of :=`
+
+---
+
+## 4. Os tipos básicos
+
+| Tipo | Guarda | Exemplo | Equivalente JS |
+|---|---|---|---|
+| `string` | texto | `"Levi"` | string |
+| `int` | número inteiro | `20`, `-5` | number |
+| `float64` | número decimal | `3.14` | number |
+| `bool` | verdadeiro/falso | `true` | boolean |
+
+Strings em Go usam **aspas duplas** `"texto"`. Aspas simples `'a'` são pra **um caractere** (tipo `rune`), não string.
+
+---
+
+## 5. int e float64 são tipos diferentes
+
+No JS existe um só `number` pra tudo. No Go, inteiro e decimal são tipos distintos e **não se misturam automaticamente**:
+
+```go
+var a int = 10
+var b float64 = 3.0
+resultado := a + b   // ERRO: mismatched types int and float64
+```
+
+Solução: **conversão explícita de tipo** com `tipo(valor)`:
+
+```go
+resultado := float64(a) + b   // converte a para float64 antes de somar
+```
+
+Isso vale pra qualquer conversão: `int(x)`, `float64(y)`, `string(z)` etc.
+
+---
+
+## 6. Zero Values (não existe `undefined`)
+
+No JS, variável sem valor é `undefined`. No Go isso não existe. Toda variável declarada sem valor recebe um **"valor zero"** do seu tipo:
+
+```go
+var name string   // vira ""      (string vazia)
+var age int       // vira 0
+var active bool   // vira false
+var price float64 // vira 0.0
+```
+
+Nunca há `undefined` causando bug silencioso. A variável **sempre** tem um valor válido do tipo dela.
+
+---
+
+## 7. Constantes
+
+Pra valores que **nunca mudam** (fixos em tempo de compilação):
+
+```go
+const Pi = 3.14
+const AppName = "Cave Mode"
+```
+
+Parecido com `const` do JS, mas em Go é só pra valores realmente constantes (números, strings, bools) — não pode ser resultado de algo calculado em runtime.
+
+---
+
+## 8. Programa completo (rode!)
+
+`02-variaveis/main.go`:
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// Short form (most common)
+	name := "Levi"
+	age := 20
+
+	// Explicit form
+	var height float64 = 1.75
+	var isDeveloper bool = true
+
+	// Zero values (no initial value)
+	var city string // becomes ""
+	var savings int // becomes 0
+
+	fmt.Println("Name:", name)
+	fmt.Println("Age:", age)
+	fmt.Println("Height:", height)
+	fmt.Println("Is developer:", isDeveloper)
+	fmt.Println("City (empty):", city)
+	fmt.Println("Savings (zero):", savings)
+
+	// Changing a value (= without the colon)
+	city = "São Paulo"
+	fmt.Println("City now:", city)
+
+	// Type conversion (int -> float64)
+	years := 5
+	average := float64(savings) / float64(years)
+	fmt.Println("Average:", average)
+}
+```
+
+Rodar:
+
+```bash
+go run ./02-variaveis
+```
+
+---
+
+## 9. Experimentos pra fixar
+
+1. **Conversão:** some `int + float64` sem converter, leia o erro. Depois corrija com `float64(...)`.
+2. **Recriar variável:** declare com `:=`, tente declarar de novo com `:=`, leia o erro `no new variables on left side`.
+3. **Zero values:** declare um `var` de cada tipo sem valor e imprima.
+4. **Printf:** use `fmt.Printf("%s tem %d anos\n", name, age)`.
+
+---
+
+## Resumo do que você aprendeu
+
+- `var nome tipo = valor` (explícito) vs `nome := valor` (curto, infere tipo).
+- `:=` **cria**; `=` **muda**. Recriar com `:=` dá erro.
+- Tipos básicos: `string`, `int`, `float64`, `bool`.
+- `int` e `float64` **não se misturam** — precisa converter: `float64(x)`.
+- Não existe `undefined`: variável sem valor recebe o **zero value**.
+- `const` pra valores fixos em tempo de compilação.
+
+---
+
+**Próxima doc — 03: Funções** (onde o `(retorno, error)` finalmente faz sentido).
