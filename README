@@ -1,0 +1,137 @@
+Go do Zero Doc 01: Fundamentos e Primeiro Programa
+
+Caderno de estudos de Go para quem vem de TypeScript/JavaScript.
+Código e comentários em inglês; explicações em PT-BR.
+
+ Objetivo desta doc
+
+Sair do nada até ter um programa Go rodando no terminal, entendendo
+cada arquivo, cada comando e cada linha, sem mágica escondida. (tendo em vista a abstração em linguagens como js/ts)
+
+O que é o Go (mentalidade vinda do JS/TS)
+
+O JS/TS (com React, Express, Nest) abstrai muita coisa pra você ser
+produtivo rápido. Go faz o oposto: ele é explícito. Você vê o que
+normalmente fica escondido.
+Não é Go ser difícil, é Go ser honesto sobre o que sempre esteve lá embaixo.
+
+Comandos do Go (o "npm" do Go)
+
+go mod init <nome> seria igual ao npm init (gerando o go.mod em go lang e gerando o package.json em js)
+go mod tidy seria o npm install
+go run caminho/do/arquivo.go roda o arquivo que seria o equivalente ao node nomeDoArquivo.js
+go build gera o executável
+go get <pkg> adiciona uma dependencia que seria o equivalente de npm install <pkg>
+go fmt é o prettier do js, formatador do código
+
+Criando o projeto do ZERO
+
+Passo 1 Criar a pasta e entrar nela
+- "mkdir go-studies"
+- "cd go-studies"
+
+Passo 2 Inicializar o módulo
+- "go mod init go-studies" 
+(aqui vai criar o seu go.mod: isso é o que aparece no seu go.mod
+
+module go-studies  -> nome do projeto e em casos reais usa-se o caminho do repo criado exemplo: github.com/leviutima/go-studies, isso se torna o pre fixo de todos os imports internos do projeto
+
+go 1.26  -> versão do major.minor do go )
+
+
+Passo 3 Criar a estrutura da lição
+- "mkdir hello"
+Dentro dela, cria o arquivo 01-hello/main.go
+
+package main
+
+import "fmt"
+
+func main (){
+	fmt.Println("módulo de estudos sobre golang")
+}
+
+Passo 4 Rodar
+- "go run ./01-hello"
+
+Saída esperada: "módulo de estudos sobre golang"
+
+=====================================================
+
+Dissecando o programa linha por linha
+
+package main
+
+Todo arquivo Go pertence a um pacote (uma caixa de código relacionado).
+O pacote main é especial: é o único que vira um executável
+(um programa que roda). Os outros pacotes são bibliotecas.
+Pensa no package main como "este é o arquivo que pode ser ligado".
+
+
+import "fmt"
+
+Go não tem nada global como o console do JS. Tudo que vem de fora
+precisa ser importado.
+fmt (de format) = biblioteca padrão pra imprimir e formatar texto.
+É o "console" do Go.
+Import não usado = erro de compilação. Go te obriga a remover lixo.
+
+
+func main() { ... }
+
+A função main é o ponto de entrada: a primeira coisa que roda.
+Nome obrigatório (main), sem parâmetros, sem retorno.
+É a porta de entrada do programa. (No JS isso fica escondido pelo runtime.)
+
+
+fmt.Println("...")
+
+fmt.Println = o console.log do Go. (Println = "print line":
+imprime e pula linha.)
+Sintaxe pacote.Função() → chama função de um pacote com ponto,
+igual console.log no JS.
+
+
+
+Variações de impressão (bom saber)
+- fmt.Print("sem pular linha")          // não pula linha no fim
+- fmt.Println("pula linha no fim")      // pula linha (= console.log)
+- fmt.Printf("Oi %s, %d anos\n", n, i)  // com formatação (placeholders)
+
+Placeholders mais comuns do Printf:
+- %s        string                      "Levi"
+- %d        número inteiro              20
+- %f        número decimal              3.14
+- %v        qualquer valor (genérico)   qualquer coisa
+- %t        booleano                    true
+- \n        quebra de linha             —
+
+==========================================================================
+
+Comparação direta JS ↔ Go
+
+// JavaScript
+console.log("Cave Mode bootando...")
+
+// Go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Cave Mode bootando...")
+}
+
+O JS parece menor porque esconde o package, o import e o main.
+Eles existem no JS também, o runtime monta pra você. Go te faz escrever
+na mão: mais verboso, porém nada acontece por mágica.
+
+
+Detalhes de sintaxe do Go
+
+- Sem ponto-e-vírgula no fim das linhas (o compilador adiciona sozinho).
+- Sem aspas simples pra string — use aspas duplas "texto".
+- (Aspas simples 'a' são pra um único caractere, chamado rune.)
+- O { da função tem que ficar na mesma linha que o func colocar em baixo dá erro. (Regra do Go)
+- Variável declarada e não usada = erro. Mesma coisa pra import.
+- O Go formata o código por você: rode go fmt ./... e ele arruma a indentação.
